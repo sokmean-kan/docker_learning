@@ -1,0 +1,13 @@
+.git
+.github
+.idea
+.gradle
+src
+gradle
+gradlew
+gradlew.bat
+build.gradle.kts
+settings.gradle.kts
+out
+*.md
+HELP.md

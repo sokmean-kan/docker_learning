@@ -1,0 +1,32 @@
+name: Push to Docker Hub
+
+# Run when you push code to main branch
+on:
+  push:
+    branches: [main]
+
+jobs:
+  docker:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1) Download your project code
+      - uses: actions/checkout@v4
+
+      # 2) Install Java 17 (needed for ./gradlew)
+      - uses: actions/setup-java@v4
+        with:
+          java-version: "17"
+          distribution: "temurin"
+
+      # 3) Build jar: ./gradlew bootJar
+      - run: chmod +x gradlew && ./gradlew bootJar -x test --no-daemon
+
+      # 4) Login Docker Hub: docker login -u USER --password-stdin
+      - run: echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
+
+      # 5) Build image: docker build -t kansokmean/docker:latest .
+      # 6) Push image: docker push kansokmean/docker:latest
+      - run: |
+          docker build -t kansokmean/docker:latest .
+          docker push kansokmean/docker:latest
