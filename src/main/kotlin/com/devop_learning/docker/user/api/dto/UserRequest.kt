@@ -11,5 +11,5 @@ data class UserRequest(
 
 	@field:NotBlank
 	@field:Size(max = 255)
-	val name: String,
+	val username: String,
 )

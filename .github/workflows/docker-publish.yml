@@ -42,5 +42,5 @@ jobs:
 
       # 6) Build and push: kansokmean/docker:latest
       - run: |
-          docker build -t kansokmean/docker:latest .
-          docker push kansokmean/docker:latest
+          docker build -t kansokmean/docker:2.0 .
+          docker push kansokmean/docker:2.0

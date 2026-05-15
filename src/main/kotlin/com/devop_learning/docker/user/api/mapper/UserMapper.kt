@@ -8,7 +8,7 @@ import com.devop_learning.docker.user.domain.model.User
 object UserMapper {
 
 	fun toCommand(request: UserRequest): UserCommand =
-		UserCommand(email = request.email, name = request.name)
+		UserCommand(email = request.email, name = request.username)
 
 	fun toResponse(user: User): UserResponse =
 		UserResponse(
