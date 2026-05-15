@@ -1,6 +1,6 @@
 name: Push to Docker Hub
 
-# Run when you push code to main branch
+# Run when you push to main
 on:
   push:
     branches: [main]
@@ -10,23 +10,37 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1) Download your project code
+      # 1) Get code
       - uses: actions/checkout@v4
 
-      # 2) Install Java 17 (needed for ./gradlew)
+      # 2) Install Java 17
       - uses: actions/setup-java@v4
         with:
           java-version: "17"
           distribution: "temurin"
 
-      # 3) Build jar: ./gradlew bootJar
+      # 3) Build jar
       - run: chmod +x gradlew && ./gradlew bootJar -x test --no-daemon
 
-      # 4) Login Docker Hub: docker login -u USER --password-stdin
-      - run: echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
+      # 4) Check secret exists (add DOCKERHUB_TOKEN in GitHub repo Settings → Secrets)
+      - name: Check Docker Hub token
+        env:
+          DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+        run: |
+          if [ -z "$DOCKERHUB_TOKEN" ]; then
+            echo "ERROR: Secret DOCKERHUB_TOKEN is missing."
+            echo "Add it: GitHub repo → Settings → Secrets and variables → Actions"
+            echo "Get token: https://hub.docker.com/settings/security"
+            exit 1
+          fi
 
-      # 5) Build image: docker build -t kansokmean/docker:latest .
-      # 6) Push image: docker push kansokmean/docker:latest
+      # 5) Login: docker login -u kansokmean
+      - name: Login Docker Hub
+        env:
+          DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+        run: echo "$DOCKERHUB_TOKEN" | docker login -u kansokmean --password-stdin
+
+      # 6) Build and push: kansokmean/docker:latest
       - run: |
           docker build -t kansokmean/docker:latest .
           docker push kansokmean/docker:latest
