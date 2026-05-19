@@ -39,7 +39,7 @@ class UserControllerTest {
 	@Test
 	fun crudLifecycle() {
 		val createBody = objectMapper.writeValueAsString(
-			UserRequest(email = "dave@example.com", name = "Dave Miller"),
+			UserRequest(email = "dave@example.com", username = "Dave Miller"),
 		)
 
 		val createResult = mockMvc.perform(
@@ -59,7 +59,7 @@ class UserControllerTest {
 			.andExpect(jsonPath("$.email").value("dave@example.com"))
 
 		val updateBody = objectMapper.writeValueAsString(
-			UserRequest(email = "dave@example.com", name = "Dave Updated"),
+			UserRequest(email = "dave@example.com", username = "Dave Updated"),
 		)
 		mockMvc.perform(
 			put("${ApiPaths.USERS}/$id")

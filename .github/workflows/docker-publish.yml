@@ -18,11 +18,18 @@ jobs:
         with:
           java-version: "17"
           distribution: "temurin"
-
+    
       # 3) Build jar
-      - run: chmod +x gradlew && ./gradlew bootJar -x test --no-daemon
+      # - run: chmod +x gradlew && ./gradlew bootJar -x test --no-daemon
 
-      # 4) Check secret exists (add DOCKERHUB_TOKEN in GitHub repo Settings → Secrets)
+      # 3) Test project
+      - name: Run tests
+        run: chmod +x gradlew && ./gradlew test --no-daemon
+
+      # 4) Build jar
+      - run: ./gradlew bootJar -x test --no-daemon
+
+      # 5) Check secret exists (add DOCKERHUB_TOKEN in GitHub repo Settings → Secrets)
       - name: Check Docker Hub token
         env:
           DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
@@ -34,13 +41,13 @@ jobs:
             exit 1
           fi
 
-      # 5) Login: docker login -u kansokmean
+      # 6) Login: docker login -u kansokmean
       - name: Login Docker Hub
         env:
           DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
         run: echo "$DOCKERHUB_TOKEN" | docker login -u kansokmean --password-stdin
 
-      # 6) Build and push: kansokmean/docker:latest
+      # 7) Build and push: kansokmean/docker:latest
       - run: |
           docker build -t kansokmean/docker:2.0 .
           docker push kansokmean/docker:2.0
